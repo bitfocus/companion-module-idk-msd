@@ -208,7 +208,7 @@ module.exports = {
 		}
 
 		actions.SAM = {
-			name: 'Mute/Unmute Output Audio',
+			name: 'Output Audio - Mute/Unmute',
 			description: 'Mute or unmute the audio for an output channel',
 			options: [
 				{
