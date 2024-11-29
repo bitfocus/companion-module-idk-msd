@@ -72,19 +72,29 @@ module.exports = {
 			self.updateStatus(InstanceStatus.Disconnected)
 		})
 	},
+    sleep(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	},
+	async getData() {
 
-	getData() {
 		let self = this
 
-		//get data from the device
-		self.sendCommand('@GSW') //Switching video and audio channel simultaneously
-		self.sendCommand('@GPI,0') //PinP Status
-		self.sendCommand('@GUC,0') //Output Audio Status
-		self.sendCommand('@GAV,0') //Output Audio Volume Levels
-		self.sendCommand('@GAM,0') //Output Audio Mute Status
-		self.sendCommand('@GAS,0') //Input Audio Source Status
-		send.sendCommand('@GSO,0') //Input Audio Volume Levels
-	},
+		// //get data from the device
+		await this.sleep(50)
+	    self.sendCommand('@GSW') //Switching video and audio channel simultaneously
+		await this.sleep(50)
+	    self.sendCommand('@GPI') //PinP Status
+		await this.sleep(50)
+		self.sendCommand('@GUC') //Output Audio Status
+		await this.sleep(50)
+		self.sendCommand('@GAV') //Output Audio Volume Levels
+		await this.sleep(50)
+		self.sendCommand('@GAM') //Output Audio Mute Status
+		await this.sleep(50)
+		self.sendCommand('@GSO') //Input Audio Source Status
+		await this.sleep(50)
+		self.sendCommand('@GAS') //Input Audio Volume Levels
+},
 
 	async processData(data) {
 		let self = this
@@ -129,8 +139,10 @@ module.exports = {
 
 			return
 		}
+		self.DATA = self.DATA || {};  // 定義されていない場合は空のオブジェクトを代入
 
 		let variableObj = {}
+
 
 		switch (sections[0]) {
 			case '@GSW':
@@ -141,19 +153,20 @@ module.exports = {
 				//video_main_2 = video input channel for main video output 2
 				//audio_main_2 = audio input channel for main video output 2
 				//video_pinp_2 = video input channel for picture-in-picture output 2
-				self.DATA.videoMain1 = parseInt(sections[1])
-				self.DATA.audioMain1 = parseInt(sections[2])
-				self.DATA.videoPinp1 = parseInt(sections[3])
-				self.DATA.videoMain2 = parseInt(sections[4])
-				self.DATA.audioMain2 = parseInt(sections[5])
-				self.DATA.videoPinp2 = parseInt(sections[6])
 
-				variableObj[`video_main_1`] = self.DATA.videoMain1
-				variableObj[`audio_main_1`] = self.DATA.audioMain1
-				variableObj[`video_pinp_1`] = self.DATA.videoPinp1
-				variableObj[`video_main_2`] = self.DATA.videoMain2
-				variableObj[`audio_main_2`] = self.DATA.audioMain2
-				variableObj[`video_pinp_2`] = self.DATA.videoPinp2
+				self.DATA.videoMain1 = parseInt(sections[1]);
+				self.DATA.audioMain1 = parseInt(sections[2]);
+				self.DATA.videoPinp1 = parseInt(sections[3]);
+				self.DATA.videoMain2 = parseInt(sections[4]);
+				self.DATA.audioMain2 = parseInt(sections[5]);
+				self.DATA.videoPinp2 = parseInt(sections[6]);
+
+				variableObj[`video_main_1`] = self.DATA.videoMain1;
+				variableObj[`audio_main_1`] = self.DATA.audioMain1;
+				variableObj[`video_pinp_1`] = self.DATA.videoPinp1;
+				variableObj[`video_main_2`] = self.DATA.videoMain2;
+				variableObj[`audio_main_2`] = self.DATA.audioMain2;
+				variableObj[`video_pinp_2`] = self.DATA.videoPinp2;
 				break
 			case '@GPI':
 				//@GPI,pinp_display_1,pinp_display_2<CR><LF>
@@ -197,8 +210,8 @@ module.exports = {
 					self.DATA.dante2Volume = parseInt(sections[6])
 
 					variableObj[`analog_out_2_volume`] = self.DATA.analogOut2Volume
-					variableObj[`dante1_volume`] = self.DATA.dante1Volume
-					variableObj[`dante2_volume`] = self.DATA.dante2Volume
+					variableObj[`dante_out_1_volume`] = self.DATA.dante1Volume
+					variableObj[`dante_out_2_volume`] = self.DATA.dante2Volume
 				}
 
 				variableObj[`audio_out_1_volume`] = self.DATA.audioOut1Volume
@@ -346,11 +359,11 @@ module.exports = {
 					variableObj[`analog_in_1_volume`] = self.DATA.analogIn1Volume
 				}
 
-				variableObj[`audio_in_1_volume`] = self.DATA.audioIn1Volume
+			 	 variableObj[`audio_in_1_volume`] = self.DATA.audioIn1Volume
 				variableObj[`audio_in_2_volume`] = self.DATA.audioIn2Volume
 				variableObj[`audio_in_3_volume`] = self.DATA.audioIn3Volume
 				variableObj[`audio_in_4_volume`] = self.DATA.audioIn4Volume
-				break
+			 break
 			default:
 				break
 		}
@@ -366,8 +379,8 @@ module.exports = {
 			if (self.config.verbose) {
 				self.log('debug', `Sending: ${command}`)
 			}
-
 			self.socket.send(command + '\r\n')
+			
 			self.lastCommand = command
 
 			//remove from queue if needed
