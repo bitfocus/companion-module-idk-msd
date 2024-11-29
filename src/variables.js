@@ -22,9 +22,9 @@ module.exports = {
 		variables.push({ variableId: `audio_out_2b`, name: `Audio Out 2B` })
 
 		//audio output volume level for out1, out2, analogout1
-		variables.push({ variableId: `audio_out_1`, name: `Audio Out 1` })
-		variables.push({ variableId: `audio_out_2`, name: `Audio Out 2` })
-		variables.push({ variableId: `analog_out_1`, name: `Analog Out 1` })
+		// variables.push({ variableId: `audio_out_1`, name: `Audio Out 1` })
+		// variables.push({ variableId: `audio_out_2`, name: `Audio Out 2` })
+		// variables.push({ variableId: `analog_out_1`, name: `Analog Out 1` })
 
 		//audio output volume level for out1, out2, analogout1
 		variables.push({ variableId: `audio_out_1_volume`, name: `Audio Out 1 Volume` })
